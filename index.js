@@ -166,5 +166,56 @@ const addEmployee = () => {
             default: false
         }
     ])
-    
-}
+    .then(employeeData => {
+        // data for employee types 
+
+        let { name, id, email, role, github, school, confirmAddEmployee } = employeeData; 
+        let employee; 
+
+        if (role === "Engineer") {
+            employee = new Engineer (name, id, email, github);
+
+            console.log(employee);
+
+        } else if (role === "Intern") {
+            employee = new Intern (name, id, email, school);
+
+            console.log(employee);
+        }
+
+        teamArray.push(employee); 
+
+        if (confirmAddEmployee) {
+            return addEmployee(teamArray); 
+        } else {
+            return teamArray;
+        }
+    })
+
+};
+
+// function to generate HTML page using file system
+const writeFile = data => {
+    fs.writeFile('./dist/index.html', data, err => {
+        // if error
+        if (err) {
+            console.log(err);
+            return;
+        //when profile is created
+        } else {
+            console.log("Your team profile has been created! Check out your index.html for the results")
+        }
+    })
+};
+
+addManager()
+    .then(addEmployee)
+    .then(teamArray => {
+        return generateHTML(teamArray);
+    })
+    .then(pageHTML => {
+        return writeFile(pageHTML);
+    })
+    .catch(err => {
+        console.log(err);
+    });
